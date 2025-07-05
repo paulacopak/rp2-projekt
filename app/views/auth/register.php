@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>Registracija</title></head>
+<body>
+    <h2>Registracija</h2>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Korisničko ime" required><br>
+        <input type="password" name="password" placeholder="Lozinka" required><br>
+        <button type="submit">Registriraj se</button>
+    </form>
+    <p>Već imate račun? <a href="index.php?action=login">Prijava</a></p>
+</body>
+</html>
