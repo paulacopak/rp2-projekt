@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require_once __DIR__. '/app/controllers/autocontrollers.php';
 
 $action = $_GET['action'] ?? 'login';
@@ -66,6 +68,17 @@ switch ($action) {
         }
         echo "Dobrodošao, {$_SESSION['user']['username']}! Tvoja uloga je: {$_SESSION['user']['role']}";
         echo "<p><a href='index.php?action=logout'>Odjavi se</a></p>";
+        echo "<p><a href='index.php?action=home'>Početak</a></p>";
+
+        break;
+    case 'home':
+        session_start();
+        if(!isset($_SESSION['user'])){
+            header('Location: index.php?action=login');
+            exit;
+        }
+        $topics = $auth->getTopics();
+        include __DIR__.'/app/views/home.php';
         break;
     default:
         echo "404 - Stranica ne postoji.";

@@ -32,14 +32,23 @@ class AuthController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'];
             $password = $_POST['password'];
-            $this->userModel->register($username, $password);
-            header('Location: index.php?action=login');
-            exit;
-        } else {
-            require __DIR__ . '/../views/auth/register.php';
+            $success=$this->userModel->register($username, $password);
+            if($success){
+                header('Location: index.php?action=login');
+                exit;
+            }else{
+                $error = "Korisničko ime već postoji.";
+                require __DIR__.'/../views/auth/register.php';
+            }
+        } else{
+            $error = null;
+            require __DIR__.'/../views/auth/register.php';
         }
+            
     }
-
+    public function getTopics(){
+        return $this->userModel->getTopics();
+    }
     public function logout() {
         session_start();
         session_destroy();
