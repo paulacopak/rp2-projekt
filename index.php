@@ -90,6 +90,17 @@ switch ($action) {
         $stats = $auth->getUserStats($username);
         include __DIR__.'/app/views/user/profil.php';
         break;
+    case 'ranking':
+	session_start();
+        if (!isset($_SESSION['user'])) {
+            header('Location: index.php?action=login');
+            exit;
+        }
+        require_once __DIR__ . '/app/controllers/LeaderboardController.php';
+        $controller = new LeaderboardController();
+        $controller->show(); // prikazuje rang listu
+        break;
+
     default:
         echo "404 - Stranica ne postoji.";
 }
