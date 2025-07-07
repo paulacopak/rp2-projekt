@@ -69,7 +69,7 @@ switch ($action) {
         echo "Dobrodošao, {$_SESSION['user']['username']}! Tvoja uloga je: {$_SESSION['user']['role']}";
         echo "<p><a href='index.php?action=logout'>Odjavi se</a></p>";
         echo "<p><a href='index.php?action=home'>Početak</a></p>";
-
+        echo "<p><a href ='index.php?action=profil'>Moj profil</a></p>";
         break;
     case 'home':
         session_start();
@@ -79,6 +79,16 @@ switch ($action) {
         }
         $topics = $auth->getTopics();
         include __DIR__.'/app/views/home.php';
+        break;
+    case 'profile':
+        session_start();
+        if(!isset($_SESSION['user'])){
+            header('Location: index.php?action=login');
+            exit;
+        }
+        $username = $_SESSION['user']['username'];
+        $stats = $auth->getUserStats($username);
+        include __DIR__.'/app/views/user/profil.php';
         break;
     default:
         echo "404 - Stranica ne postoji.";

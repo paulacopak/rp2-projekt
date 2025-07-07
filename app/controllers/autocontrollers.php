@@ -49,10 +49,17 @@ class AuthController {
     public function getTopics(){
         return $this->userModel->getTopics();
     }
+    public function getStatistics($ime){
+        return $this->userModel->getStatistics($ime);
+    }
+    
     public function logout() {
         session_start();
         session_destroy();
         header('Location: index.php?action=login');
         exit;
     }
+    public function getUserStats($username) {
+        return $this->userModel->getUserStats($username);
+    }   
 }

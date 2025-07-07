@@ -33,5 +33,10 @@ class User {
         $stmt = $this->db->query("SELECT * FROM tematike");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
+    public function getUserStats($username){
+        $stmt = $this->db->prepare("SELECT * FROM statistics WHERE username = ?");
+        $stmt->execute([$username]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
 }
