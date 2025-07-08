@@ -61,5 +61,12 @@ class AuthController {
     }
     public function getUserStats($username) {
         return $this->userModel->getUserStats($username);
+    }
+    public function addTopic($name) {
+        return $this->userModel->addTopic($name);
+    }
+    public function addQuestion($topic_id,$question_text,$odgovor,$tip){
+        return $this->userModel->addQuestion($topic_id,$question_text,$odgovor,$tip);
+
     }   
 }
