@@ -80,6 +80,16 @@ switch ($action) {
         $topics = $auth->getTopics();
         include __DIR__.'/app/views/home.php';
         break;
+    case 'ranking':
+        session_start();
+        if (!isset($_SESSION['user'])) {
+            header('Location: index.php?action=login');
+            exit;
+        }
+        require_once __DIR__ . '/app/controllers/LeaderboardController.php';
+        $controller = new LeaderboardController();
+        $controller->show(); //prikazuje rang listu
+        break;
     case 'profile':
         session_start();
         if(!isset($_SESSION['user'])){
