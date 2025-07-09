@@ -71,9 +71,10 @@
 </head>
 <body>
     <div class="navbar">
-        <a href="index.php">Početna</a>
-        <a href="ranglista.php">Rang lista</a>
-        <a href="logout.php">Odjava</a>
+        <a href="index.php?action=home">HOME</a>
+    	<a href="index.php?action=profile">Profil</a>
+    	<a href="index.php?action=ranking">Rang Lista</a>
+    	<a href="index.php?action=logout">Odjava</a>
     </div>
 
     <div class="container">
