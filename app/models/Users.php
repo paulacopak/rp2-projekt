@@ -38,5 +38,15 @@ class User {
         $stmt->execute([$username]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+    public function addTopic($name){
+        $stmt=$this->db->prepare("INSERT INTO tematike (name) VALUES (?)");
+        return $stmt->execute([$name]);
+    }
+    public function addQuestion($topic_id, $tekst, $odgovor, $tip) {
+    $stmt = $this->db->prepare("
+        INSERT INTO questions (id_tematike, tekst_pitanja, odgovor, tip)
+        VALUES (?, ?, ?, ?)
+    ");
+    return $stmt->execute([$topic_id, $tekst, $odgovor, $tip]);
+}
 }

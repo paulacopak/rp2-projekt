@@ -2,7 +2,7 @@
 <html lang="hr">
 <head>
     <meta charset="UTF-8">
-    <title>Po�etna</title>
+    <title>Po�etna</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -58,14 +58,67 @@
 
 <div class="container">
     <h2>Odaberi tematski kviz:</h2>
-    <div class="topics">
+    <div class="topics" id="topics-container">
         <?php foreach ($topics as $topic): ?>
             <div class="topic-card" onclick="location.href='index.php?action=start_quiz&topic=<?= urlencode($topic['name']) ?>'">
                 <?= htmlspecialchars($topic['name']) ?>
             </div>
         <?php endforeach; ?>
     </div>
+    <?php if($_SESSION['user']['role']==='admin'):?>
+        <div id="admin-controls">
+            <button id="show-add-topic">Dodaj tematiku</button>
+            <div id="add-topic-form" style ="display:none;margin-top:10px;">
+                <input type="text" id ="new-topic-name" placeholder ="Ime tematike">
+                <button id ="cancel-add">Odustani</button>
+                <button id="submit-add">Dodaj tematiku</button>
+
+            </div>
+        </div>
+    <?php endif;?>
 </div>
+<script>
+document.getElementById('show-add-topic').addEventListener('click', () => {
+    document.getElementById('add-topic-form').style.display = 'block';
+    document.getElementById('show-add-topic').style.display = 'none';
+});
+
+document.getElementById('cancel-add').addEventListener('click', () => {
+    document.getElementById('add-topic-form').style.display = 'none';
+    document.getElementById('show-add-topic').style.display = 'inline-block';
+});
+
+document.getElementById('submit-add').addEventListener('click', () => {
+    const topicName = document.getElementById('new-topic-name').value.trim();
+    if (!topicName) return;
+
+    fetch('index.php?action=ajax_add_topic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'name=' + encodeURIComponent(topicName)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const topicCard = document.createElement('div');
+            topicCard.className = 'topic-card';
+            topicCard.textContent = topicName;
+            topicCard.onclick = () => {
+                location.href = 'index.php?action=start_quiz&topic=' + encodeURIComponent(topicName);
+            };
+            document.querySelector('#topics-container').appendChild(topicCard);
+
+            // očisti i sakrij formu
+            document.getElementById('new-topic-name').value = '';
+            document.getElementById('add-topic-form').style.display = 'none';
+            document.getElementById('show-add-topic').style.display = 'inline-block';
+        } else {
+            alert('Greška pri dodavanju tematike.');
+        }
+    });
+});
+</script>
+
 
 </body>
 </html>

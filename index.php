@@ -1,10 +1,18 @@
 <?php
+session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once __DIR__. '/app/controllers/autocontrollers.php';
+require_once __DIR__.'/app/controllers/QuizController.php';
+require_once __DIR__ . '/app/controllers/LeaderboardController.php';
+
 
 $action = $_GET['action'] ?? 'login';
 $auth = new AuthController();
+
+$quizController = new QuizController();
+
+
 ?>
 
 <!DOCTYPE html>
@@ -61,7 +69,7 @@ switch ($action) {
         $auth->logout();
         break;
     case 'dashboard':
-        session_start();
+        
         if (!isset($_SESSION['user'])) {
             header('Location: index.php?action=login');
             exit;
@@ -72,7 +80,7 @@ switch ($action) {
         echo "<p><a href ='index.php?action=profil'>Moj profil</a></p>";
         break;
     case 'home':
-        session_start();
+       
         if(!isset($_SESSION['user'])){
             header('Location: index.php?action=login');
             exit;
@@ -80,8 +88,18 @@ switch ($action) {
         $topics = $auth->getTopics();
         include __DIR__.'/app/views/home.php';
         break;
+    case 'ranking':
+        
+        if (!isset($_SESSION['user'])) {
+            header('Location: index.php?action=login');
+            exit;
+        }
+        require_once __DIR__ . '/app/controllers/LeaderboardController.php';
+        $controller = new LeaderboardController();
+        $controller->show(); //prikazuje rang listu
+        break;
     case 'profile':
-        session_start();
+        
         if(!isset($_SESSION['user'])){
             header('Location: index.php?action=login');
             exit;
@@ -90,17 +108,65 @@ switch ($action) {
         $stats = $auth->getUserStats($username);
         include __DIR__.'/app/views/user/profil.php';
         break;
-    case 'ranking':
-	session_start();
+    case 'admin_add_topic':
+        
+        if($_SESSION['user']['role']!=='admin'){
+            header('Location: index.php?action=login');
+            exit;
+        }
+        if($_SERVER['REQUEST_METHOD']==='POST'){
+            $topicName=$_POST['name'];
+            $auth->addTopic($topicName);
+            header('Location: index.php?action=admin_add_topic');
+            exit;
+        }
+        include 'app/views/admin/dodajTematiku.php';
+        break;
+    case 'admin_add_question':
+        if($_SESSION['user']['role']!=='admin'){
+            header('Location: index.php?action=login');
+            exit;
+        }
+        if($_SERVER['REQUEST_METHOD']==='POST'){
+            $id_tematike =$_POST['id_tematike'];
+            $text=$_POST['question'];
+            $auth->dodajPitanje($id_tematike,$text);
+            header("Location: index.php?action=admin_add_question");
+            exit;
+
+        }
+        $topics = $auth->getTopics();
+        include 'app/views/admin/add_question.php';
+        break;
+    case 'ajax_add_topic':
+        session_start();
+        header('Content-Type: application/json');
+        if(!isset($_SESSION['user']) || $_SESSION['user']['role']!=='admin'){
+            echo json_encode(['success'=>false,'error'=>'Unauthorized']);
+            exit;
+        }
+        $name = $_POST['name'] ?? '';
+        if(!$name){
+            echo json_encode(['success' => false, 'error' => 'Missing name']);
+            exit;
+        }
+        $success = $auth->addTopic($name);
+        echo json_encode(['success' => $success]);
+        break;
+    case 'start_quiz':
+        if(!isset($_SESSION['user'])){
+            header('Location: index.php?action=login');
+            exit;
+        }
+        $quizController->startQuiz();
+        break;
+    case 'finish_quiz':
         if (!isset($_SESSION['user'])) {
             header('Location: index.php?action=login');
             exit;
         }
-        require_once __DIR__ . '/app/controllers/LeaderboardController.php';
-        $controller = new LeaderboardController();
-        $controller->show(); // prikazuje rang listu
+        $quizController->finishQuiz();
         break;
-
     default:
         echo "404 - Stranica ne postoji.";
 }
