@@ -48,11 +48,8 @@ class QuizController {
         if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin') {
             $topic = $tematika; // Podaci o tematici
             $questions = $this->pitanjaModel->getAllQuestionsByTopicId($tematika['id']); // Dohvati SVA pitanja
-<<<<<<< HEAD
+
             include __DIR__ . '/../views/topic_managment.php'; // Prikazujemo admin view
-=======
-            include __DIR__ . '/../views/topic_managment.php'; // Prikazujemo admin view
->>>>>>> 9da5f07e2ce258c4293e6b0b4086a83eeb4ef826
             exit;
         }
 
