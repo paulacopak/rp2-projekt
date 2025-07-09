@@ -15,7 +15,7 @@ class AuthController {
 
             $user = $this->userModel->login($username, $password);
             if ($user) {
-                session_start();
+                
                 $_SESSION['user'] = $user;
                 header('Location: index.php?action=dashboard');
                 exit;
@@ -54,7 +54,7 @@ class AuthController {
     }
     
     public function logout() {
-        session_start();
+        
         session_destroy();
         header('Location: index.php?action=login');
         exit;

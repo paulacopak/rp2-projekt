@@ -1,10 +1,18 @@
 <?php
+session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once __DIR__. '/app/controllers/autocontrollers.php';
+require_once __DIR__.'/app/controllers/QuizController.php';
+require_once __DIR__ . '/app/controllers/LeaderboardController.php';
+
 
 $action = $_GET['action'] ?? 'login';
 $auth = new AuthController();
+
+$quizController = new QuizController();
+
+
 ?>
 
 <!DOCTYPE html>
@@ -61,7 +69,7 @@ switch ($action) {
         $auth->logout();
         break;
     case 'dashboard':
-        session_start();
+        
         if (!isset($_SESSION['user'])) {
             header('Location: index.php?action=login');
             exit;
@@ -72,7 +80,7 @@ switch ($action) {
         echo "<p><a href ='index.php?action=profil'>Moj profil</a></p>";
         break;
     case 'home':
-        session_start();
+       
         if(!isset($_SESSION['user'])){
             header('Location: index.php?action=login');
             exit;
@@ -81,7 +89,7 @@ switch ($action) {
         include __DIR__.'/app/views/home.php';
         break;
     case 'ranking':
-        session_start();
+        
         if (!isset($_SESSION['user'])) {
             header('Location: index.php?action=login');
             exit;
@@ -91,7 +99,7 @@ switch ($action) {
         $controller->show(); //prikazuje rang listu
         break;
     case 'profile':
-        session_start();
+        
         if(!isset($_SESSION['user'])){
             header('Location: index.php?action=login');
             exit;
@@ -101,7 +109,7 @@ switch ($action) {
         include __DIR__.'/app/views/user/profil.php';
         break;
     case 'admin_add_topic':
-        session_start();
+        
         if($_SESSION['user']['role']!=='admin'){
             header('Location: index.php?action=login');
             exit;
@@ -144,7 +152,21 @@ switch ($action) {
         }
         $success = $auth->addTopic($name);
         echo json_encode(['success' => $success]);
-        exit;
+        break;
+    case 'start_quiz':
+        if(!isset($_SESSION['user'])){
+            header('Location: index.php?action=login');
+            exit;
+        }
+        $quizController->startQuiz();
+        break;
+    case 'finish_quiz':
+        if (!isset($_SESSION['user'])) {
+            header('Location: index.php?action=login');
+            exit;
+        }
+        $quizController->finishQuiz();
+        break;
     default:
         echo "404 - Stranica ne postoji.";
 }
