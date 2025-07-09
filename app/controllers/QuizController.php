@@ -142,8 +142,6 @@ class QuizController {
 
         include __DIR__ . '/../views/quiz/quiz_result.php';
     }
-<<<<<<< HEAD
+
 }
-=======
-}
->>>>>>> 9da5f07e2ce258c4293e6b0b4086a83eeb4ef826
+
