@@ -34,6 +34,7 @@ class AuthController {
             $password = $_POST['password'];
             $success=$this->userModel->register($username, $password);
             if($success){
+		$this->userModel->createStatisticsEntry($username);
                 header('Location: index.php?action=login');
                 exit;
             }else{
