@@ -6,7 +6,11 @@
 <body>
     <h2>Profil: <?= htmlspecialchars($_SESSION['user']['username']) ?></h2>
     <p>Uloga: <?= htmlspecialchars($_SESSION['user']['role']) ?></p>
-    <p>Kreirano: <?=$stats[0]['created_at'] ?></p>
+    <?php if (!empty($stats)): ?>
+    <p>Kreirano: <?= htmlspecialchars($stats[0]['created_at']) ?></p>
+    <?php else: ?>
+    <p>Korisnik još nema kviz statistiku.</p>
+    <?php endif; ?>
     <h3>Statistika kvizova</h3>
     <?php if (empty($stats)): ?>
         <p>Još nemaš rješenih kvizova.</p>
