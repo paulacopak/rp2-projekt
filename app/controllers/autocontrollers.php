@@ -17,7 +17,7 @@ class AuthController {
             if ($user) {
                 
                 $_SESSION['user'] = $user;
-                header('Location: index.php?action=dashboard');
+                header('Location: index.php?action=home');
                 exit;
             } else {
                 $error = "Pogrešno korisničko ime ili lozinka.";
