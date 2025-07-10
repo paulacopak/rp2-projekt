@@ -1,16 +1,24 @@
 <?php
 session_start();
+
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
+
 require_once __DIR__. '/app/controllers/autocontrollers.php';
 require_once __DIR__.'/app/controllers/QuizController.php';
 require_once __DIR__ . '/app/controllers/LeaderboardController.php';
+require_once __DIR__.'/app/controllers/CommentController.php';
+
 
 
 $action = $_GET['action'] ?? 'login';
 $auth = new AuthController();
 
 $quizController = new QuizController();
+$commentController = new CommentController();
+
 
 
 ?>
@@ -58,6 +66,7 @@ $quizController = new QuizController();
     <div class="container">
         <h1>Kviz</h1>
 <?php
+
 switch ($action) {
     case 'login':
         $auth->login();
@@ -108,6 +117,23 @@ switch ($action) {
         $stats = $auth->getUserStats($username);
         include __DIR__.'/app/views/user/profil.php';
         break;
+    case 'comment':
+        if(!isset($_SESSION['user'])){
+            header('Location: index.php?action=login');
+            exit;
+        }
+        $username = $_SESSION['user']['username'];
+        $commentController->showComments();
+        break;
+    case 'add_comment_process':
+        
+        $commentController->addComment();
+        break;
+    case 'delete_comment':
+        $commentController->deleteComment();
+        break;
+    
+
     case 'admin_add_topic':
         
         if($_SESSION['user']['role']!=='admin'){

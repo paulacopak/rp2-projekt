@@ -74,6 +74,7 @@
         <a href="index.php?action=home">HOME</a>
     	<a href="index.php?action=profile">Profil</a>
     	<a href="index.php?action=ranking">Rang Lista</a>
+    	<a href="index.php?action=comment">Komentari</a>
     	<a href="index.php?action=logout">Odjava</a>
     </div>
 
