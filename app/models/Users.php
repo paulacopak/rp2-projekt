@@ -48,5 +48,17 @@ class User {
         VALUES (?, ?, ?, ?)
     ");
     return $stmt->execute([$topic_id, $tekst, $odgovor, $tip]);
+    }
+
+    public function createStatisticsEntry($username) {
+    $defaultTopic='';
+    $stmt = $this->db->prepare("
+        INSERT INTO statistics 
+            (username, topic, bodovi, ukupno, start_time, end_time, created_at)
+        VALUES 
+            (?, ?, 0, 0, NULL, NULL, NOW())
+    ");
+    return $stmt->execute([$username,$defaultTopic]);
 }
+
 }
