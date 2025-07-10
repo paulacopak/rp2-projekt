@@ -48,6 +48,6 @@
             <?php endforeach; ?>
         </table>
     <?php endif; ?>
-    <p><a href="index.php?action=home">Natrag na početnu</a></p>
+    <p><a href="index.php?action=home">HOME</a></p>
 </body>
 </html>
