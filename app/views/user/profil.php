@@ -44,6 +44,6 @@
             <?php endforeach; ?>
         </table>
     <?php endif; ?>
-    <p><a href="index.php?action=dashboard">Natrag na početnu</a></p>
+    <p><a href="index.php?action=home">Natrag na početnu</a></p>
 </body>
 </html>
