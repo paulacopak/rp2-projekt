@@ -49,6 +49,7 @@
 </head>
 <body>
 
+
 <div class="navbar">
     <a href="index.php?action=home">HOME</a>
     <a href="index.php?action=profile">Profil</a>
@@ -63,6 +64,13 @@
         <?php foreach ($topics as $topic): ?>
             <div class="topic-card" onclick="location.href='index.php?action=start_quiz&topic=<?= urlencode($topic['name']) ?>'">
                 <?= htmlspecialchars($topic['name']) ?>
+                
+                <?php if ($_SESSION['user']['role'] === 'admin'): ?>
+                    <form method="POST" action="index.php?action=obrisiTematiku" onsubmit="return confirm('Obrisati ovu tematiku?')">
+                        <input type="hidden" name="id" value="<?= $topic['id'] ?>">
+                        <button type="submit" style="margin-top:10px;">Obriši</button>
+                    </form>
+                <?php endif; ?>
             </div>
         <?php endforeach; ?>
     </div>
