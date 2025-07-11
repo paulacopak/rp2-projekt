@@ -40,6 +40,27 @@ class Tematike {
         return $stmt->execute([$name]);
     }
 
+    public static function deleteTematika($tematika_id) {
+    $db = Database::getInstance();
+    $stmt = $db->prepare("DELETE FROM tematike WHERE id = ?");
+    return $stmt->execute([$tematika_id]);
+    }
+
+    public function obrisiTematiku($id) {
+    $db = Database::getInstance();
+
+    // Brisanje povezanih pitanja
+    $stmt = $db->prepare("DELETE FROM pitanja WHERE tema_id = ?");
+    $stmt->execute([$id]);
+
+    // Brisanje same tematike
+    $stmt = $db->prepare("DELETE FROM tematike WHERE id = ?");
+    $stmt->execute([$id]);
+    }
+
+
+
+
     // Možete dodati i metode za ažuriranje i brisanje tematika po potrebi
     // public function updateTematika($id, $newName) { /* ... */ }
     // public function deleteTematika($id) { /* ... */ }
