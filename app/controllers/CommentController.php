@@ -67,33 +67,36 @@ class CommentController {
         }
 
         header('Content-Type: application/json'); // Ovo je ključno za AJAX odgovor
+	error_log("DeleteComment called");
+    	error_log("Session user: " . print_r($_SESSION['user'], true));
+    	error_log("POST data: " . print_r($_POST, true));
+      
+	if (!isset($_SESSION['user'])) {
+        echo json_encode(['success' => false, 'message' => 'Niste prijavljeni.']);
+        exit;
+    	}
 
-        // Provjeri je li korisnik admin ili autor komentara
-        if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
-            // Dodao sam provjeru je li korisnik autor komentara
-            $commentId = $_POST['comment_id'] ?? null;
-            if ($commentId && isset($_SESSION['user']) && $this->komentarModel->isCommentAuthor($_SESSION['user']['id'], $commentId)) {
-                // Ako je autor, dozvoli brisanje
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Niste ovlašteni za brisanje ovog komentara.']);
-                exit;
-            }
-        }
+    	$userId = $_SESSION['user']['id'];
+    	$userRole = $_SESSION['user']['role'];
+    	$commentId = $_POST['comment_id'] ?? null;
+	if (!$commentId) {
+        echo json_encode(['success' => false, 'message' => 'Nedostaje ID komentara.']);
+        exit;
+    	}
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $commentId = $_POST['comment_id'] ?? null;
-            if ($commentId) {
-                if ($this->komentarModel->deleteComment($commentId)) {
-                    echo json_encode(['success' => true, 'message' => 'Komentar obrisan.']);
-                } else {
-                    echo json_encode(['success' => false, 'message' => 'Greška pri brisanju komentara iz baze.']);
-                }
-            } else {
-                echo json_encode(['success' => false, 'message' => 'Nedostaje ID komentara.']);
-            }
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
-        }
-        exit; // Uvijek izađite nakon slanja JSON odgovora
-    }
+    	error_log("UserRole: $userRole, UserId: $userId, CommentId: $commentId");
+        
+	// Dozvoli brisanje ako je korisnik admin ili autor komentara
+    	if ($userRole === 'admin' || $this->komentarModel->isCommentAuthor($userId, $commentId)) {
+        	if ($this->komentarModel->deleteComment($commentId)) {
+            		echo json_encode(['success' => true, 'message' => 'Komentar je uspješno obrisan.']);
+        	} else {
+            		echo json_encode(['success' => false, 'message' => 'Greška pri brisanju komentara.']);
+        	}
+    	} else {
+        	echo json_encode(['success' => false, 'message' => 'Nemate ovlasti za brisanje ovog komentara.']);
+    	}
+
+    exit;
+}
 }
