@@ -19,6 +19,28 @@ $auth = new AuthController();
 $quizController = new QuizController();
 $commentController = new CommentController();
 
+if ($action === 'delete_comment') {
+    // Obrada brisanja komentara AJAX-om
+    $commentController->deleteComment();
+    // exit pozvan unutar metode
+}
+
+if ($action === 'ajax_add_topic') {
+    // AJAX dodavanje teme
+    header('Content-Type: application/json');
+    if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+        echo json_encode(['success' => false, 'error' => 'Unauthorized']);
+        exit;
+    }
+    $name = $_POST['name'] ?? '';
+    if (!$name) {
+        echo json_encode(['success' => false, 'error' => 'Missing name']);
+        exit;
+    }
+    $success = $auth->addTopic($name);
+    echo json_encode(['success' => $success]);
+    exit;
+}
 
 
 ?>
