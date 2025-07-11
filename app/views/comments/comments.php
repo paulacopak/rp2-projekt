@@ -146,12 +146,16 @@
         <div class="comment-section">
             <?php if (!empty($comments)): ?>
                 <?php foreach ($comments as $comment): ?>
-                    <div class="comment-item">
+                    <div id="comment-<?= $comment['id'] ?>" class="comment-item">
                         <strong><?= htmlspecialchars($comment['username']) ?></strong>
-                        <small> <?= htmlspecialchars((new DateTime($comment['created_at']))->format('d.m.Y H:i')) ?></small>
+                        <small><?= htmlspecialchars((new DateTime($comment['created_at']))->format('d.m.Y H:i')) ?></small>
                         <p><?= nl2br(htmlspecialchars($comment['comment_text'])) ?></p>
-                        <?php if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'): ?>
-                            <button class="delete-comment-btn" data-id="<?= $comment['id'] ?>">Obriši</button>
+                        <?php if (isset($_SESSION['user']) &&
+                                 ($_SESSION['user']['role'] === 'admin' || $_SESSION['user']['id'] == $comment['user_id'])): ?>
+                            <button class="delete-comment-btn"
+                                    data-comment-id="<?= $comment['id'] ?>">
+                                Obriši
+                            </button>
                         <?php endif; ?>
                     </div>
                 <?php endforeach; ?>
@@ -170,34 +174,24 @@
     </div>
 
     <script>
-    document.querySelectorAll('.delete-comment-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const commentId = this.dataset.id;
-            if (confirm('Jeste li sigurni da želite obrisati ovaj komentar?')) {
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.delete-comment-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.getAttribute('data-comment-id');
+                if (!confirm('Jeste li sigurni da želite obrisati ovaj komentar?')) return;
+
                 fetch('index.php?action=delete_comment', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     },
-                    body: 'comment_id=' + commentId
+                    body: 'comment_id=' + encodeURIComponent(commentId)
                 })
-                .then(response => {
-                    // Provjerite je li odgovor JSON
-                    const contentType = response.headers.get('content-type');
-                    if (contentType && contentType.indexOf('application/json') !== -1) {
-                        return response.json();
-                    } else {
-                        // Ako nije JSON, logirajte sirovi tekst odgovora
-                        return response.text().then(text => {
-                            console.error('Server response was not JSON:', text);
-                            throw new Error('Server je vratio neočekivan odgovor.');
-                        });
-                    }
-                })
+                .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Uspješno obrisano, ukloni komentar iz DOM-a
-                        this.closest('.comment-item').remove();
+                        const elem = document.getElementById(`comment-${commentId}`);
+                        if (elem) elem.remove();
                         alert(data.message);
                     } else {
                         alert('Greška: ' + data.message);
@@ -207,7 +201,7 @@
                     console.error('Greška pri brisanju komentara:', error);
                     alert('Došlo je do greške prilikom brisanja komentara.');
                 });
-            }
+            });
         });
     });
 </script>
