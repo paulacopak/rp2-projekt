@@ -179,6 +179,13 @@ switch ($action) {
         $success = $auth->addTopic($name);
         echo json_encode(['success' => $success]);
         break;
+    case 'obrisiTematiku':
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            require_once 'app/controllers/AdminController.php';
+            $controller = new AdminController();
+            $controller->obrisiTematiku();
+        }
+        break;
     case 'start_quiz':
         if(!isset($_SESSION['user'])){
             header('Location: index.php?action=login');
@@ -193,6 +200,7 @@ switch ($action) {
         }
         $quizController->finishQuiz();
         break;
+    
     default:
         echo "404 - Stranica ne postoji.";
 }
@@ -200,3 +208,5 @@ switch ($action) {
 </div>
 </body>
 </html>
+
+
