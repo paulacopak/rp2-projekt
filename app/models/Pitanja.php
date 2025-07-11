@@ -10,7 +10,12 @@ class Pitanja {
         $this->db = Database::getInstance();
     }
 
-
+    public function getAllQuestionsByTopicId($topic_id){
+        $stmt = $this->db->prepare("SELECT * FROM pitanja WHERE  id_tematike=?");
+        $stmt->execute([$topic_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+    }
     public function getQuestionsByTopicId($topic_id, $limit = 5) {
       
         $stmt = $this->db->prepare("SELECT * FROM pitanja WHERE id_tematike = ? ORDER BY RAND() LIMIT ?");
@@ -35,6 +40,7 @@ class Pitanja {
 
        
     }
+   
 
     // Opcionalno, dodajte metodu za provjeru odgovora, iako se to može raditi i u kontroleru
     // public function checkAnswer($questionId, $userAnswer) { /* ... */ }

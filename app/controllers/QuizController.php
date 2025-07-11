@@ -45,13 +45,17 @@ class QuizController {
         }
 
         // AKO JE KORISNIK ADMIN
-        if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin') {
-            $topic = $tematika; // Podaci o tematici
-            $questions = $this->pitanjaModel->getAllQuestionsByTopicId($tematika['id']); // Dohvati SVA pitanja
+        $topic = $tematika;
 
-            include __DIR__ . '/../views/topic_managment.php'; // Prikazujemo admin view
+        if ($_SESSION['user']['role'] === 'admin') {
+            $questions = $this->pitanjaModel->getAllQuestionsByTopicId($tematika['id']);
+            include __DIR__ . '/../views/topic_managment.php'; // ADMIN VIEW
+            exit;
+        } else {
+            include __DIR__ . '/../views/topic_preview.php'; // USER VIEW
             exit;
         }
+
 
         // NORMALNA LOGIKA ZA POKRETANJE KVIZA (za korisnike)
         $questions = $this->pitanjaModel->getQuestionsByTopicId($tematika['id'], 5); // Dohvaća 5 pitanja za kviz

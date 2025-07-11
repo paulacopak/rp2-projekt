@@ -215,6 +215,40 @@ switch ($action) {
         }
         $quizController->startQuiz();
         break;
+    case 'begin_quiz':
+        if(!isset($_SESSION['user'])){
+            header('Loction: index.php?action=login');
+            exit;
+        }
+         $topicName = $_GET['topic'] ?? null;
+    if (!$topicName) {
+        header('Location: index.php?action=home');
+        exit;
+    }
+
+        $tematika = (new Tematike())->getTematikaByName($topicName);
+        if (!$tematika) {
+            echo "Nepostojeća tematika.";
+            exit;
+        }
+
+        $questions = (new Pitanja())->getQuestionsByTopicId($tematika['id'], 5);
+        if (empty($questions)) {
+            echo "Nema pitanja za ovu tematiku.";
+            exit;
+        }
+
+        $_SESSION['quiz'] = [
+            'topic_id' => $tematika['id'],
+            'topic_name' => $tematika['name'],
+            'questions' => $questions,
+            'current_question_index' => 0,
+            'score' => 0,
+            'total_questions' => count($questions),
+            'start_time' => time(),
+        ];
+        header('Location: index.php?action=process_answer');
+        exit;
     case 'finish_quiz':
         if (!isset($_SESSION['user'])) {
             header('Location: index.php?action=login');
