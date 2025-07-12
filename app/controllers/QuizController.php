@@ -81,32 +81,25 @@ class QuizController {
     }
 
     public function processAnswer() {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['quiz']) || $_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: index.php?action=home');
-            exit;
-        }
-
-        $quiz = &$_SESSION['quiz'];
-        $currentQuestion = $quiz['questions'][$quiz['current_question_index']];
-        $userAnswer = $_POST['answer'] ?? null;
-
-        if ($userAnswer == $currentQuestion['odgovor']) {
-            $quiz['score']++;
-        }
-
-        $quiz['current_question_index']++;
-
-        if ($quiz['current_question_index'] < $quiz['total_questions']) {
-            $question = $quiz['questions'][$quiz['current_question_index']];
-            include __DIR__ . '/../views/quiz/quiz_question.php';
-        } else {
-            $this->finishQuiz();
-        }
+    if (!isset($_SESSION['quiz'])) {
+        header('Location: index.php?action=home');
+        exit;
     }
+
+    $quizData = $_SESSION['quiz'];
+    $currentIndex = $quizData['current_question_index'];
+    $questions = $quizData['questions'];
+    $total = count($questions);
+
+    if ($currentIndex < 0 || $currentIndex >= $total) {
+        echo "Greška: nevažeći indeks pitanja.";
+        return;
+    }
+
+    $currentQuestion = $questions[$currentIndex];
+    include __DIR__ . '/../views/process_answer.php';
+    }
+
 
     public function finishQuiz() {
         if (session_status() == PHP_SESSION_NONE) {

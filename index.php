@@ -249,6 +249,23 @@ switch ($action) {
         ];
         header('Location: index.php?action=process_answer');
         exit;
+    case 'process_answer':
+        $quizController->processAnswer();
+        break;
+
+    case 'navigate_quiz':
+        if (!isset($_SESSION['quiz'])) {
+            header('Location: index.php?action=home');
+            exit;
+        }
+
+        $dir = $_GET['dir'] ?? '';
+        if ($dir === 'prev') $_SESSION['quiz']['current_question_index'] = max(0, $_SESSION['quiz']['current_question_index'] - 1);
+        elseif ($dir === 'next') $_SESSION['quiz']['current_question_index'] = min($_SESSION['quiz']['total_questions'] - 1, $_SESSION['quiz']['current_question_index'] + 1);
+
+        header('Location: index.php?action=process_answer');
+        exit;
+
     case 'finish_quiz':
         if (!isset($_SESSION['user'])) {
             header('Location: index.php?action=login');
