@@ -26,7 +26,7 @@ class Pitanja {
     }
 
     public function getQuestionById($question_id) {
-        $stmt = $this->db->prepare("SELECT * FROM questions WHERE id = ?");
+        $stmt = $this->db->prepare("SELECT * FROM pitanja WHERE id = ?");
         $stmt->execute([$question_id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
