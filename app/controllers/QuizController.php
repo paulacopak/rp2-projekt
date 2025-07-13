@@ -80,16 +80,22 @@ class QuizController {
         exit;
     }
 
-    public function processAnswer() {
+   public function processAnswer() {
     if (!isset($_SESSION['quiz'])) {
         header('Location: index.php?action=home');
         exit;
     }
 
     $quizData = $_SESSION['quiz'];
-    $currentIndex = $quizData['current_question_index'];
     $questions = $quizData['questions'];
     $total = count($questions);
+
+    // Novi kod:
+    if (isset($_GET['index'])) {
+        $_SESSION['quiz']['current_question_index'] = (int)$_GET['index'];
+    }
+
+    $currentIndex = $_SESSION['quiz']['current_question_index'];
 
     if ($currentIndex < 0 || $currentIndex >= $total) {
         echo "Greška: nevažeći indeks pitanja.";
@@ -98,13 +104,11 @@ class QuizController {
 
     $currentQuestion = $questions[$currentIndex];
     include __DIR__ . '/../views/process_answer.php';
-    }
+}
 
 
     public function finishQuiz() {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
+        session_start();
 
         if (!isset($_SESSION['quiz'])) {
             header('Location: index.php?action=home');
@@ -112,32 +116,61 @@ class QuizController {
         }
 
         $quiz = $_SESSION['quiz'];
-        $endTime = time();
-        $duration = $endTime - $quiz['start_time'];
+        $questions = $quiz['questions'];
+        $answers = $quiz['answers'] ?? [];
 
-        $username = $_SESSION['user']['username'] ?? 'Gost';
+        $tocno = 0;
+        foreach ($questions as $i => $q) {
+            if (isset($answers[$i]) && trim($answers[$i]) === trim($q['odgovor'])) {
+                $tocno++;
+            }
+        }
+
+        $ukupno = count($questions);
+        $trajanje = time() - $quiz['start_time'];
+
+        $_SESSION['quiz']['rezultat'] = [
+            'tocno' => $tocno,
+            'ukupno' => $ukupno,
+            'trajanje' => $trajanje,
+        ];
+
+        // Spremi rezultat u tablicu 'results'
+        require_once __DIR__ . '/../models/Rezultati.php';
+        $rezRepo = new Rezultati();
+        $rezRepo->spremiRezultat(
+            $_SESSION['user']['id'],           // user_id
+            $tocno,                             // score
+            $_SESSION['quiz']['topic_name'],   // category
+            $trajanje                          // duration in seconds
+        );
+
+        // (OPCIJA) Spremi statistiku i na leaderboard ako već imaš funkcije
+        $username = $_SESSION['user']['username'] ?? null;
         $user_id = $_SESSION['user']['id'] ?? null;
 
-        if ($user_id) {
+        if ($user_id && $username) {
             $this->userModel->saveQuizStats(
                 $username,
                 $quiz['topic_name'],
-                $quiz['score'],
-                $quiz['total_questions'],
+                $tocno,
+                $ukupno,
                 date('Y-m-d H:i:s', $quiz['start_time']),
-                date('Y-m-d H:i:s', $endTime)
+                date('Y-m-d H:i:s')
             );
 
-            $this->leaderboardModel->addScore($user_id, $quiz['score']);
+            $this->leaderboardModel->addScore($user_id, $tocno);
         }
 
-        $finalScore = $quiz['score'];
-        $totalQuestions = $quiz['total_questions'];
-        $topicName = $quiz['topic_name'];
-
+        include __DIR__ . '/../views/rezultat.php';
+    }
+    public function odustani(){
+        if(session_status()==PHP_SESSION_NONE){
+            session_start();
+        }
         unset($_SESSION['quiz']);
-
-        include __DIR__ . '/../views/quiz/quiz_result.php';
+        header('Location: index.php?action=home');
+        exit;
     }
 
 }

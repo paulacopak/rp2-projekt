@@ -51,6 +51,13 @@ if ($action === 'ajax_add_topic') {
     echo json_encode(['success' => $success]);
     exit;
 }
+if($action ==='admin_questions'){
+    (new AdminController())->showAllQuestions();
+}
+if ($_GET['action'] === 'odustani') {
+    $quizController->odustani();
+    exit;
+}
 
 
 ?>
@@ -129,6 +136,67 @@ switch ($action) {
         $topics = $auth->getTopics();
         include __DIR__.'/app/views/home.php';
         break;
+    case 'sva_pitanja':
+
+        if ($_SESSION['user']['role'] === 'admin') {
+            $controller = new AdminController();
+            $controller->prikaziSvaPitanja();
+        }
+        break;
+    case 'spremi_odgovor':
+        session_start();
+        if (!isset($_SESSION['quiz'])) exit;
+
+        $index = isset($_POST['index']) ? (int)$_POST['index'] : -1;
+        $odgovor = isset($_POST['odgovor']) ? trim($_POST['odgovor']) : '';
+
+        if ($index >= 0) {
+            $_SESSION['quiz']['answers'][$index] = $odgovor;
+        }
+        exit;  // Važno da ne šalješ dodatni output
+    case 'review_answers':
+        include 'app/views/review_answers.php';
+        break;
+    case 'go_to_question':
+        if (!isset($_SESSION['quiz'])) {
+            header('Location: index.php?action=home');
+            exit;
+        }
+        // Prebaci index iz GET i pozovi processAnswer
+        $_SESSION['quiz']['current_question_index'] = (int) ($_GET['index'] ?? 0);
+        $quizController->processAnswer();
+        break;
+
+    case 'predaj_kviz':
+        $quiz = $_SESSION['quiz'];
+        $answers = $_SESSION['quiz']['answers'] ?? [];
+        $tocno = 0;
+
+        foreach ($quiz['questions'] as $i => $q) {
+            if (strcasecmp(trim($answers[$i] ?? ''), trim($q['odgovor'])) === 0) {
+                $tocno++;
+            }
+        }
+
+        $kraj = time();
+        $trajanje = $kraj - $quiz['start_time'];
+
+        $_SESSION['quiz']['rezultat'] = [
+            'tocno' => $tocno,
+            'ukupno' => count($quiz['questions']),
+            'trajanje' => $trajanje
+        ];
+
+        header('Location: index.php?action=rezultat');
+        exit;
+    case 'spremi_odgovor':
+        $i = $_POST['index'] ?? null;
+        $odgovor = $_POST['odgovor'] ?? '';
+
+        if ($i !== null && isset($_SESSION['quiz']['questions'][$i])) {
+            $_SESSION['quiz']['answers'][$i] = trim($odgovor);
+        }
+        exit;
     case 'ranking':
         
         if (!isset($_SESSION['user'])) {
@@ -212,7 +280,10 @@ switch ($action) {
         $success = $auth->addTopic($name);
         echo json_encode(['success' => $success]);
         break;
-        
+    case 'rezultat':
+        include 'app/views/rezultat.php';
+        break;
+    
     case 'obrisiTematiku':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             require_once 'app/controllers/autocontrollers.php';

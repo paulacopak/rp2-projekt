@@ -40,7 +40,10 @@ class Pitanja {
 
        
     }
-   
+    public function getAllQuestions() {
+    $stmt = $this->db->query("SELECT * FROM pitanja");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
     // Opcionalno, dodajte metodu za provjeru odgovora, iako se to može raditi i u kontroleru
     // public function checkAnswer($questionId, $userAnswer) { /* ... */ }
