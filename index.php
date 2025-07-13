@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 
@@ -11,7 +12,16 @@ require_once __DIR__.'/app/controllers/QuizController.php';
 require_once __DIR__ . '/app/controllers/LeaderboardController.php';
 require_once __DIR__.'/app/controllers/CommentController.php';
 
+require_once __DIR__. '/app/controllers/QuestionController.php';
 
+$controller = new QuestionController();
+/*
+if ($_GET['url'] === 'questions/add' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    $controller->showAddForm();
+} elseif ($_GET['url'] === 'questions/add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $controller->addQuestion();
+}
+*/
 
 $action = $_GET['action'] ?? 'login';
 $auth = new AuthController();
@@ -46,7 +56,7 @@ if ($action === 'ajax_add_topic') {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -170,6 +180,7 @@ switch ($action) {
         }
         include 'app/views/admin/dodajTematiku.php';
         break;
+
     case 'admin_add_question':
         if($_SESSION['user']['role']!=='admin'){
             header('Location: index.php?action=login');
@@ -201,10 +212,11 @@ switch ($action) {
         $success = $auth->addTopic($name);
         echo json_encode(['success' => $success]);
         break;
+        
     case 'obrisiTematiku':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            require_once 'app/controllers/AdminController.php';
-            $controller = new AdminController();
+            require_once 'app/controllers/autocontrollers.php';
+            $controller = new AuthController();
             $controller->obrisiTematiku();
         }
         break;
@@ -221,10 +233,10 @@ switch ($action) {
             exit;
         }
          $topicName = $_GET['topic'] ?? null;
-    if (!$topicName) {
-        header('Location: index.php?action=home');
-        exit;
-    }
+        if (!$topicName) {
+            header('Location: index.php?action=home');
+            exit;
+        }
 
         $tematika = (new Tematike())->getTematikaByName($topicName);
         if (!$tematika) {
@@ -265,7 +277,7 @@ switch ($action) {
 
         header('Location: index.php?action=process_answer');
         exit;
-
+    
     case 'finish_quiz':
         if (!isset($_SESSION['user'])) {
             header('Location: index.php?action=login');
