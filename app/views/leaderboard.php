@@ -5,26 +5,18 @@
     <title>Rang lista korisnika</title>
     <style>
         body {
+	    body {
+            background-color: #fff9c4; /* blago žuta */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* visina prozora */
+            margin: 0;
             font-family: Arial, sans-serif;
-            margin: 0; padding: 0;
-            background-color: #fff9c4;
         }
-        .navbar {
-            background-color: #fbc02d;
-            padding: 15px;
-            text-align: center;
-        }
-        .navbar a {
-            margin: 0 15px;
-            color: white;
-            font-weight: bold;
-            text-decoration: none;
-        }
-        .navbar a:hover {
-            text-decoration: underline;
-        }
-        .container {
+.container {
             padding: 30px;
+            flex-grow: 1;
         }
         h2 {
             text-align: center;
@@ -66,18 +58,9 @@
         .bronze {
             background-color: #efebe9 !important;
         }
-
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="index.php?action=home">HOME</a>
-    	<a href="index.php?action=profile">Profil</a>
-    	<a href="index.php?action=ranking">Rang Lista</a>
-    	<a href="index.php?action=comment">Komentari</a>
-    	<a href="index.php?action=logout">Odjava</a>
-    </div>
-
     <div class="container">
         <h2>Rang lista svih korisnika</h2>
         <table>
@@ -113,6 +96,9 @@
             </tbody>
         </table>
     </div>
+    <?php
+    echo "<p><a href='index.php?action=home'>HOME</a></p>";
+    ?>
 </body>
 </html>
 
