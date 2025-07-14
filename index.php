@@ -54,9 +54,14 @@ if ($action === 'ajax_add_topic') {
 if($action ==='admin_questions'){
     (new AdminController())->showAllQuestions();
 }
-if ($_GET['action'] === 'odustani') {
+if ($action === 'odustani') {
     $quizController->odustani();
     exit;
+}
+if ($action === 'obrisi_pitanje') {
+    require_once 'app/controllers/AdminController.php';
+    $controller = new AdminController();
+    $controller->obrisiPitanje();
 }
 
 
@@ -265,6 +270,9 @@ switch ($action) {
         $topics = $auth->getTopics();
         include 'app/views/admin/add_question.php';
         break;
+     case 'dodaj_pitanje':
+        $quizController->dodajPitanje();
+        break;
     case 'ajax_add_topic':
         session_start();
         header('Content-Type: application/json');
@@ -291,6 +299,7 @@ switch ($action) {
             $controller->obrisiTematiku();
         }
         break;
+    
     case 'start_quiz':
         if(!isset($_SESSION['user'])){
             header('Location: index.php?action=login');
