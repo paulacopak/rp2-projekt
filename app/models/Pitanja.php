@@ -43,7 +43,24 @@ class Pitanja {
     public function getAllQuestions() {
     $stmt = $this->db->query("SELECT * FROM pitanja");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+    }
+    public function obrisiPitanje($id) {
+    $stmt = $this->db->prepare("DELETE FROM pitanja WHERE id = ?");
+    $stmt->execute([$id]);
+    }
+
+    public function dodajPitanje($data) {
+        $stmt = $this->db->prepare("INSERT INTO pitanja (id_tematike, tekst_pitanja, tip, opcije, odgovor) VALUES (:id_tematike, :tekst_pitanja, :tip, :opcije, :odgovor)");
+        return $stmt->execute([
+            ':id_tematike' => $data['id_tematike'],
+            ':tekst_pitanja' => $data['tekst_pitanja'],
+            ':tip' => $data['tip'],
+            ':opcije' => $data['opcije'],
+            ':odgovor' => $data['odgovor']
+        ]);
+    }
+
+
 
     // Opcionalno, dodajte metodu za provjeru odgovora, iako se to može raditi i u kontroleru
     // public function checkAnswer($questionId, $userAnswer) { /* ... */ }
