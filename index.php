@@ -222,6 +222,24 @@ switch ($action) {
         $stats = $auth->getUserStats($username);
         include __DIR__.'/app/views/user/profil.php';
         break;
+    case 'update_profile':
+    if (!isset($_SESSION['user'])) {
+        echo json_encode(['success' => false, 'error' => 'Niste prijavljeni']);
+        exit;
+    }
+
+    header('Content-Type: application/json');
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    $bodovi = $data['bodovi'] ?? 0;
+    $ukupno = $data['ukupno'] ?? 0;
+
+    require_once __DIR__ . '/app/models/Users.php';
+    $userModel = new User();
+    $success = $userModel->updateStats($_SESSION['user']['username'], $bodovi, $ukupno);
+
+    echo json_encode(['success' => $success]);
+    exit;
     case 'comment':
         if(!isset($_SESSION['user'])){
             header('Location: index.php?action=login');
