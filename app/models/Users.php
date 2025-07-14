@@ -33,11 +33,19 @@ class User {
         $stmt = $this->db->query("SELECT * FROM tematike");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function getUserStats($username){
-        $stmt = $this->db->prepare("SELECT * FROM statistics WHERE username = ?");
-        $stmt->execute([$username]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    public function getUserStats($username) {
+    $stmt = $this->db->prepare("
+        SELECT r.category AS topic, r.score AS bodovi, 
+               NULL AS ukupno, r.created_at AS start_time, 
+               ADDTIME(r.created_at, r.duration) AS end_time
+        FROM results r
+        JOIN users u ON r.user_id = u.id
+        WHERE u.username = ?
+        ORDER BY r.created_at DESC
+    ");
+    $stmt->execute([$username]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
     public function addTopic($name){
         $stmt=$this->db->prepare("INSERT INTO tematike (name) VALUES (?)");
         return $stmt->execute([$name]);
