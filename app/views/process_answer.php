@@ -88,7 +88,7 @@ $uneseniOdgovor = $_SESSION['quiz']['answers'][$currentIndex] ?? '';
 
         $('#next').on('click', function () {
             if (index === total - 1) {
-                spremiOdgovor('review');
+                spremiOdgovor('finish');
             } else {
                 spremiOdgovor('next');
             }
@@ -122,7 +122,7 @@ $uneseniOdgovor = $_SESSION['quiz']['answers'][$currentIndex] ?? '';
                 window.location.href = 'index.php?action=navigate_quiz&dir=next';
             } else if (dir === 'prev') {
                 window.location.href = 'index.php?action=navigate_quiz&dir=prev';
-            } else if (dir === 'review') {
+            } else if (dir === 'finish') {
                 window.location.href = 'index.php?action=review_answers';
             }
         });
