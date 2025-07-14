@@ -172,6 +172,42 @@ class QuizController {
         header('Location: index.php?action=home');
         exit;
     }
+    public function dodajPitanje() {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $idTematike = $_POST['id_tematike'] ?? null;
+        $tekst = trim($_POST['tekst_pitanja'] ?? '');
+        $tip = $_POST['tip'] ?? 'input';
+        $odgovor = trim($_POST['odgovor'] ?? '');
+        $opcije = ($tip === 'multiple') ? trim($_POST['opcije'] ?? '') : null;
+
+        // Validacija osnovnih podataka
+        if (!$idTematike || !$tekst || !$odgovor || ($tip === 'multiple' && !$opcije)) {
+            echo "Greška: Sva polja su obavezna.";
+            echo "<p><a href='index.php?action=home'>Natrag</a></p>";
+            return;
+        }
+
+        // Spremanje pitanja
+        $uspjeh = $this->pitanjaModel->dodajPitanje([
+            'id_tematike' => $idTematike,
+            'tekst_pitanja' => $tekst,
+            'tip' => $tip,
+            'opcije' => $opcije,
+            'odgovor' => $odgovor
+        ]);
+
+        if ($uspjeh) {
+            header("Location: index.php?action=start_quiz&topic=" . urlencode($_POST['topic_name']));
+            exit;
+        } else {
+            echo "Došlo je do pogreške pri spremanju pitanja.";
+        }
+    } else {
+        header("Location: index.php?action=home");
+        exit;
+    }
+}
+
 
 }
 
