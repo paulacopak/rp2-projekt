@@ -28,7 +28,25 @@ h1 {
     color: #f9a825;
     margin-bottom: 25px;
 }
+table {
+    margin: 0 auto; /* centriraj tablicu vodoravno */
+    border-collapse: collapse;
+    width: 80%;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
 
+th, td {
+    padding: 12px 20px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #fbc02d;
+    color: white;
+    font-weight: bold;
+}
 /* Gumbi i linkovi */
 a,
 button {
