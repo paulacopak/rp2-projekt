@@ -10,9 +10,11 @@ class Rezultati {
     }
 
     public function spremiRezultat($user_id, $score, $category, $duration_seconds) {
-        $stmt = $this->db->prepare("INSERT INTO results (user_id, score, category, created_at) VALUES (?, ?, ?, ?)");
-        $created_at = gmdate("H:i:s", $duration_seconds);  // npr. 00:02:31
-        return $stmt->execute([$user_id, $score, $category, $created_at]);
+        $stmt = $this->db->prepare("INSERT INTO results (user_id, score, category, duration, created_at) VALUES (?, ?, ?, ?, ?)");
+        $duration = gmdate("H:i:s", $duration_seconds);
+        $created_at = date("Y-m-d H:i:s");
+        return $stmt->execute([$user_id, $score, $category, $duration, $created_at]);
+
     }
 }
 ?>
