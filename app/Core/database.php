@@ -1,5 +1,6 @@
 <?php
 
+
 class Database {
     private static $instance = null;
 
@@ -14,7 +15,7 @@ class Database {
 
             try {
                 self::$instance = new PDO(
-                    "mysql:host=$host;dbname=$db;charset=utf8",
+                    "mysql:host=$host;dbname=$db;charset=utf8mb4",
                     $user,
                     $pass
                 );

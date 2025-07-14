@@ -66,7 +66,7 @@
                 <?= htmlspecialchars($topic['name']) ?>
                 
                 <?php if ($_SESSION['user']['role'] === 'admin'): ?>
-                    <form method="POST" action="index.php?action=obrisiTematiku" onsubmit="return confirm('Obrisati ovu tematiku?')">
+                    <form method="POST" action="index.php?action=obrisiTematiku" onsubmit="event.stopPropagation();return confirm('Obrisati ovu tematiku?')">
                         <input type="hidden" name="id" value="<?= $topic['id'] ?>">
                         <button type="submit" style="margin-top:10px;">Obriši</button>
                     </form>
@@ -126,6 +126,7 @@ document.getElementById('submit-add').addEventListener('click', () => {
         }
     });
 });
+document.querySelectorAll('form').forEach(f => f.addEventListener('click', e => e.stopPropagation()));
 </script>
 
 
