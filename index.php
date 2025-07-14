@@ -75,36 +75,8 @@ if ($action === 'obrisi_pitanje') {
     <title>Kviz</title>
 </head>
 <body>
-    <style>
-        body {
-            background-color: #fff9c4; /* blago žuta */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh; /* visina prozora */
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            text-align: center;
-            background: white;
-            padding: 30px 50px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            margin-bottom: 20px;
-            color: #fbc02d; /* tamno žuta */
-        }
-        a {
-            color: #fbc02d;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
     <div class="container">
@@ -172,28 +144,49 @@ switch ($action) {
         $quizController->processAnswer();
         break;
 
-    case 'predaj_kviz':
-        $quiz = $_SESSION['quiz'];
-        $answers = $_SESSION['quiz']['answers'] ?? [];
-        $tocno = 0;
-
-        foreach ($quiz['questions'] as $i => $q) {
-            if (strcasecmp(trim($answers[$i] ?? ''), trim($q['odgovor'])) === 0) {
-                $tocno++;
-            }
-        }
-
-        $kraj = time();
-        $trajanje = $kraj - $quiz['start_time'];
-
-        $_SESSION['quiz']['rezultat'] = [
-            'tocno' => $tocno,
-            'ukupno' => count($quiz['questions']),
-            'trajanje' => $trajanje
-        ];
-
-        header('Location: index.php?action=rezultat');
+   case 'predaj_kviz':
+    // 1) Provjeri da quiz i korisnik postoje
+    if (!isset($_SESSION['quiz']) || !isset($_SESSION['user'])) {
+        header('Location: index.php?action=home');
         exit;
+    }
+
+    // 2) Izračun točnih odgovora
+    $quiz     = $_SESSION['quiz'];
+    $answers  = $quiz['answers'] ?? [];
+    $tocno    = 0;
+    foreach ($quiz['questions'] as $i => $q) {
+        if (strcasecmp(trim($answers[$i] ?? ''), trim($q['odgovor'])) === 0) {
+            $tocno++;
+        }
+    }
+
+    // 3) Izračun trajanja
+    $kraj      = time();
+    $trajanje  = $kraj - $quiz['start_time'];  // u sekundama
+
+    // (Opcionalno) Čuvanje u sesiji
+    $_SESSION['quiz']['rezultat'] = [
+        'tocno'    => $tocno,
+        'ukupno'   => count($quiz['questions']),
+        'trajanje' => $trajanje
+    ];
+
+    // 4) Spremi u bazu pomoću modela Rezultati
+    require_once __DIR__ . '/app/models/Rezultati.php';
+    $repo = new Rezultati();
+    $repo->spremiRezultat(
+        $_SESSION['user']['id'],        // user_id
+        $tocno,                          // score
+        $quiz['topic_name'],             // category
+        $trajanje                        // duration in seconds
+    );
+
+    // 5) Preusmjeri na stranicu s rezultatom
+    header('Location: index.php?action=rezultat');
+    exit;
+
+
     case 'spremi_odgovor':
         $i = $_POST['index'] ?? null;
         $odgovor = $_POST['odgovor'] ?? '';
@@ -240,6 +233,8 @@ switch ($action) {
 
     echo json_encode(['success' => $success]);
     exit;
+
+
     case 'comment':
         if(!isset($_SESSION['user'])){
             header('Location: index.php?action=login');

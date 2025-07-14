@@ -144,6 +144,7 @@ class QuizController {
             $_SESSION['quiz']['topic_name'],   // category
             $trajanje                          // duration in seconds
         );
+        echo "Spremam rezultat...<br>";
 
         // (OPCIJA) Spremi statistiku i na leaderboard ako već imaš funkcije
         $username = $_SESSION['user']['username'] ?? null;
@@ -158,8 +159,9 @@ class QuizController {
                 date('Y-m-d H:i:s', $quiz['start_time']),
                 date('Y-m-d H:i:s')
             );
-
             $this->leaderboardModel->addScore($user_id, $tocno);
+
+        
         }
 
         include __DIR__ . '/../views/rezultat.php';

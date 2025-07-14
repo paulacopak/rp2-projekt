@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <title>Rang lista korisnika</title>
     <style>
-        body {
-	    body {
+       body {
             background-color: #fff9c4; /* blago žuta */
             display: flex;
             justify-content: center;
@@ -14,7 +13,7 @@
             margin: 0;
             font-family: Arial, sans-serif;
         }
-.container {
+        .container {
             padding: 30px;
             flex-grow: 1;
         }
@@ -101,4 +100,3 @@
     ?>
 </body>
 </html>
-

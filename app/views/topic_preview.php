@@ -52,9 +52,7 @@ if (!isset($topic) || !isset($topic['id']) || !isset($topic['name'])) {
     <h2>Tematika: <?= htmlspecialchars($topic['name']) ?></h2>
     <p>Jeste li spremni započeti kviz?</p>
     <button onclick="location.href='index.php?action=home'">Odustani</button>
-    <button onclick="location.href='index.php?action=begin_quiz&topic=<?= urlencode($topic['name']) ?>
-'">Započni kviz</button>
+    <button onclick="location.href='index.php?action=begin_quiz&topic=<?= urlencode($topic['name']) ?>'">Započni kviz</button>
 </div>
 </body>
 </html>
-
